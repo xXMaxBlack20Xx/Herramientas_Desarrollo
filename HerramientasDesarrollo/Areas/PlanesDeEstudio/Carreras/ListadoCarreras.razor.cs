@@ -2,18 +2,18 @@
 using Entidades.Generales;
 using Entidades.Modelos.PlanesDeEstudio.Carreras;
 using Microsoft.AspNetCore.Components;
+using Servicios.IRepositorios.PlanesDeEstudio;
 
 namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
 {
     partial class ListadoCarreras : ComponentBase
     {
-        [Inject] public Servicios.IRepositorios.PlanesDeEstudio.ICarreraServicios CarreraServicios { get; set; } = default!;
+        [Inject] public ICarreraServicios CarreraServicios { get; set; } = default!;
 
-        private string criterioBusqueda = string.Empty;        // <-- asegúrate de tener este campo
+        private string criterioBusqueda = string.Empty;
         private List<E_Carrera> carrerasTodas = new();
 
-
-        // Variables requeridasd insertar a la base de datos
+        // Modal / DTO
         private bool mostrarModalCrear = false;
         private bool guardando = false;
         private string? errorGuardar = string.Empty;
@@ -50,8 +50,8 @@ namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
             }
         }
 
-        // Ahora los Modales de como se va a comportar
-        protected void AbrirCrearCarrera()
+        // --- Abrir/Cerrar modal ---
+        protected void AbrirCrearCarrera()   // <-- NOMBRE CORREGIDO (antes "AbrirCrearCarreras")
         {
             nuevaCarreraDTO = new CarreraDTO { EstadoCarrera = true };
             errorGuardar = null;
@@ -63,31 +63,28 @@ namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
             mostrarModalCrear = false;
         }
 
-        // El metodo de insert
-        protected async Task<ResultadoAcciones> GuardarNuevaCarreraAsync()
+        // --- Guardar (INSERT) ---
+        protected async Task GuardarNuevaCarreraAsync()   // <-- Task, no Task<ResultadoAcciones>
         {
             errorGuardar = null;
 
-            // Validaciones
-            if(string.IsNullOrWhiteSpace(nuevaCarreraDTO.ClaveCarrera) ||
+            if (string.IsNullOrWhiteSpace(nuevaCarreraDTO.ClaveCarrera) ||
                 string.IsNullOrWhiteSpace(nuevaCarreraDTO.NombreCarrera))
             {
                 errorGuardar = "La clave y el nombre son obligatorios.";
-                return new ResultadoAcciones();
+                return;
             }
 
-            // Validaciones de duplicado (Lado cliente)
+            // Duplicados por clave (cliente)
             var coincidencias = await CarreraServicios.ListarCarreras(nuevaCarreraDTO.ClaveCarrera);
-
-            if(coincidencias?.Any(c => string.Equals(c.ClaveCarrera, nuevaCarreraDTO.ClaveCarrera, 
-                StringComparison.OrdinalIgnoreCase)) == true)
+            if (coincidencias?.Any(c =>
+                    string.Equals(c.ClaveCarrera, nuevaCarreraDTO.ClaveCarrera, StringComparison.OrdinalIgnoreCase)) == true)
             {
                 errorGuardar = $"Ya existe una carrera con la clave '{nuevaCarreraDTO.ClaveCarrera}'.";
-                return new ResultadoAcciones();
+                return;
             }
 
             guardando = true;
-
             try
             {
                 var res = await CarreraServicios.InsertarCarrera(nuevaCarreraDTO);
@@ -100,7 +97,7 @@ namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
                 }
                 else
                 {
-                    errorGuardar = $"No fue posible guardar la carrera...";
+                    errorGuardar = string.Join(" | ", (res?.Mensajes != null && res.Mensajes.Count > 0) ? res.Mensajes : new List<string> { "No fue posible guardar la carrera." });
                 }
             }
             catch (Exception ex)
@@ -111,7 +108,6 @@ namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
             {
                 guardando = false;
             }
-            return new ResultadoAcciones();
         }
     }
 }

@@ -1,0 +1,162 @@
+/*  ========================================= */
+/*  ===     Heraminetas de desarollo      === */
+/*  === Proyecto de Blazer para la UABC   === */
+/*  ========================================= */
+
+Primero tenemos que definir las capas con las que vamos a trabajar las relaciones del proyecto.
+
+// Capas
+// 1. Capa de presentación: Interfaz de usuario, donde se muestran los datos y se interactúa con el usuario.
+// 2. Capa de negocio: Lógica de negocio, donde se procesan los datos y se aplican las reglas del negocio.
+// 3. Capa de datos: Acceso a datos, donde se gestionan las operaciones de lectura y escritura en la base de datos.
+// 4. Capa de servicios: Servicios externos, donde se integran servicios de terceros o APIs.
+
+// Las relaciones entre las capas son las siguientes:
+// - La capa de presentación se comunica con la capa de negocio para obtener los datos necesarios para mostrar al usuario.
+// - La capa de negocio se comunica con la capa de datos para realizar operaciones de lectura y escritura en la base de datos.
+// - La capa de negocio también puede comunicarse con la capa de servicios para obtener datos de servicios externos.
+// - La capa de datos se encarga de gestionar la persistencia de los datos y puede interactuar con la capa de negocio para obtener información adicional.
+// - La capa de servicios puede interactuar con la capa de negocio para proporcionar datos o funcionalidades adicionales.
+// - La capa de presentación puede recibir datos de la capa de negocio y mostrarlos al usuario, así como enviar datos ingresados por el usuario a la capa de negocio para su procesamiento.
+
+
+//Servicios -> Negocios -> Datos -> Entidades
+
+//En la Entidades definimos las clases que vamos a utilizar, como por ejemplo E_Carrera
+
+
+Esto nos va a servir para hacer la relacion de las tablas en la base de datos.
+Ayudando nos a hacer la "migracion" de las tablas y a definir las relaciones entre ellas.
+
+?Que es la migracion en el desarollo de software?
+
+// Ahora tambien vamos a tener "Navegation property" en ejemplo de eso seria
+ // public ICollection<E_PlanEstudio> PlanesEstudio { get; set; };
+
+
+ Cual es la arquitectura que tiene los compoenentes de Blazer?
+
+ Tarjetas CRC
+ ?Que es una tarjeta CRC?
+ // Una tarjeta CRC (Class-Responsibility-Collaborator) es una herramienta utilizada en el diseño orientado a 
+ objetos para representar y organizar las clases de un sistema. Cada tarjeta CRC contiene tres elementos 
+ principales: el nombre de la clase, sus responsabilidades (lo que la clase debe hacer) y sus colaboradores 
+ (otras clases con las que interactúa). Las tarjetas CRC se utilizan para facilitar la comprensión del diseño del sistema,
+ identificar responsabilidades y relaciones entre clases, y promover la colaboración entre los desarrolladores 
+ durante el proceso de diseño.
+
+ Que me representa una Entidad?
+ // Una entidad representa un objeto o concepto del mundo real que tiene una identidad única y puede ser
+
+ Estan los tres detectores de errres preventivo correctivo y adaptativo
+
+La clase Carrreras: La responsabilidad de la clase Carreras es gestionar la información relacionada con las carreras académicas,
+incluyendo su nombre, duración y descripción. Sus colaboradores son las clases PlanEstudio y Materia, ya que una carrera puede 
+tener múltiples planes de estudio y cada plan de estudio puede incluir varias materias.
+
+En la capa de negocios tenemos la logica del todo el proceso, esto procede a como mapeamos las entidades a los modelos de datos
+
+En la capa de presentacion podemos dividir la y tener modulos para cada una de las entidades que tenemos en la base de datos
+
+La capa de servicios es la que se encarga de hacer las peticiones a la base de datos y devolver los datos a la capa de negocios
+
+La capa de entidades tienen que tener sus secciones
+1. Configuraciones - Aqui van las clases que se encargan de configurar las entidades (Reglas, relaciones y heredacion)
+  1.1 PlanesDeEstudio
+    1.2 AtributoEgresoConfiguration.cs
+    1.2 CarreraConfiguration.cs
+    1.2 MateriaConfiguration.cs
+    1.2 PlanEstudioConfiguration.cs
+
+2. DTO - En esta capa solamente se utiliza para validar el modelo de datos que vamos a recibir
+  2.1 PlanesDeEstudio
+    2.2 AtributoEgreso
+    2.2 Carreras
+    2.2 Materias
+    2.2 PlaneEstudios
+      2.3 AreasDeConocimientoDTO.cs
+      2.3 ListaPlanEstudiosDTO.cs
+      2.3 PlanEstudioConAtributoDTO.cs
+      2.3 PlanEstudioDTO.cs
+
+3. Generales - Aqui van las clases que se utilizan en todo el proyecto
+  3.1 Paginacion.cs
+  3.2 Respuesta.cs
+  3.3 MensajeRespuesta.cs
+
+4. Modelos - Aqui guardamos las clases "puras" que representan las tablas de la base de datos
+
+5. PerfilesDTO - Aqui van los perfiles de AutoMapper
+  5.1 PlanesDeEstudio
+    5.2 AtributoEgresoProfile.cs
+    5.2 CarreraProfile.cs
+    5.2 MateriaProfile.cs
+    5.2 PlanEstudioProfile.cs
+
+
+Para mostrar que hay una relacion usamos el ICollection esto indica que hay una relacion de uno a muchos
+
+Que son los Metadatos?
+// Los metadatos son datos que proporcionan información sobre otros datos. En el contexto de bases de datos y 
+desarrollo de software, los metadatos describen las características, propiedades y estructura de los datos almacenados.
+
+Le podemos dar click a las propiedades de entidades podemos poner que los Nullable se desabiliten para quitar el warning.
+
+Entonces cuando comenzamos a programar tenemos que pensar en el analisis del sistema para definir primero
+El folder de modelos con las clases puras osea sin ninguna logica. Despues de eso hacemos la logica de las relaciones
+que tiene cada uno de los datos en el DTO haciendo sus validaciones. Despues de eso se hacen las configuraciones de las entidades
+haciendo las relaciones y reglas que van a tener cada una de las tablas en la base de datos. Por ultimo hacemos los perfiles 
+de AutoMapper y en el general tenemos las clases que se utilizan en todo el proyecto.
+
+
+Cuales son todas las dependencias que vamos a requerir:
+ - Entityframework.Core
+
+Dentro de la capa de Presentacion se necesutas Entidades y Negocios
+
+
+Paa hacer la migracion tenemos que ir a la consola de administrador de paquetes y poner los siguientes comandos:
+(Nos vamos a tools despues a Nugget packet maneger, y en la parte de abrir terminal)
+(Si necesitamos borrar la migracion podemos hacer un "remove-migration")
+
+// 1. Add-Migration "el mensaje que nosotros queramos"
+// 2. Despue cambiamos a la parte de Datos que ahi creamos el contexto
+// 3. Desoues agremamos el -context y el nombre de la base de datos
+// 4. Entonces completo seria asi:
+    add-migration Inicial -context D_ContextoBD
+// 5. Una vez que tenemos la migracion tenemos que actualizar la base de datos
+    update-database
+
+Con esto ya temos todo el material necesario para poder hacer entidades y conectarlas mediante relaciones y subirla a sql server
+
+
+
+La interzaz es unicamente un contrato que define un conjunto de metodos y propiedades que una clase debe implementar.
+
+Toda esta clase se trata del DATA TRANSFERT OBJECT (DTO)
+
+1.- Cuando se trabajao con la base de datos se usa el modelo 
+2.- Cuando se trabaja con la parte grafica se trabaja con el DTO
+
+
+Al final estos fueron los comandos que me funcionaron:
+Add-Migration "VersionDelSistemaMejorado" -Context D_ContextDB -Project Datos -StartupProject HerramientasDesarrollo
+Update-Database -Context D_ContextDB -Project Datos -StartupProject HerramientasDesarrollo
+
+
+// Este es otro error que es bastante commun la verdad:
+                Console.WriteLine(string.Join(" | ", res?.Mensajes ?? Array.Empty<string>()));
+// tengo que sabes por que...
+
+
+Task<ResultadoAcciones>
+
+por que cuando se usa este tipo de "template se le podria llamaar se ve"
+
+Que es el:
+finally
+            {
+                guardando = false;
+            }
+
+            dentro del try catch

@@ -1,0 +1,143 @@
+﻿@page "/ListadoCarreras"
+@using Entidades.Modelos.PlanesDeEstudio.Carreras
+@using Microsoft.AspNetCore.Components.Routing
+@using Entidades.DTO.PlanesDeEstudio.Carreras;
+
+<h3>Bienvenido al listado de Carreras</h3>
+
+<div class="container">
+
+    <!-- FILA: Buscador + Botón Agregar -->
+    <div class="row mt-3 align-items-center">
+        <div class="col-12 col-md-6">
+            <input class="form-control"
+                   placeholder="Buscar por clave, nombre o alias..."
+                   @bind="criterioBusqueda" />
+        </div>
+
+        <div class="col-12 col-md-6 text-md-end mt-2 mt-md-0">
+            <button class="btn btn-success"
+                    title="Agregar nueva carrera"
+                    @onclick="AbrirCrearCarrera">
+                <i class="bi bi-plus-lg"></i> Agregar carrera
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-5">
+        <table class="table table-striped">
+            <thead>
+                <tr class="text-center">
+                    <th>Clave</th>
+                    <th>Nombre</th>
+                    <th>Alias</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (LstCarreras is null || !LstCarreras.Any())
+                {
+                    <tr>
+                        <td class="text-center fw-bold text-danger" colspan="5">
+                            No hay carreras registradas.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var carrera in LstCarreras)
+                    {
+                        <tr class="text-center">
+                            <td>@carrera.ClaveCarrera</td>
+                            <td class="text-lg-start">@carrera.NombreCarrera</td>
+                            <td class="text-lg-start">@carrera.AliasCarrera</td>
+                            <td>
+                                <span class="bg-estado badge bg-@(carrera.EstadoCarrera ? "success" : "danger")">
+                                    @(carrera.EstadoCarrera ? "Activo" : "Inactivo")
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <NavLink href="@($"/GestionCarrera/{carrera.IdCarrera}")"
+                                         class="btn btn-sm btn-outline-primary"
+                                         title="Editar carrera">
+                                    <i class="bi bi-pen"></i>
+                                </NavLink>
+
+                                <button class="btn btn-outline-danger btn-sm"
+                                        title="Borrar carrera"
+                                        @onclick="() => BorrarCarrera(carrera.IdCarrera)">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* ---------- Modal Crear Carrera ---------- *@
+@if (mostrarModalCrear)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar nueva carrera</h5>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="CerrarModalCrear"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Clave</label>
+                            <input class="form-control" @bind="nuevaCarreraDTO.ClaveCarrera" />
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <label class="form-label">Nombre</label>
+                            <input class="form-control" @bind="nuevaCarreraDTO.NombreCarrera" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Alias</label>
+                            <input class="form-control" @bind="nuevaCarreraDTO.AliasCarrera" />
+                        </div>
+                        <div class="col-12 col-md-6 d-flex align-items-end">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="chkEstado" @bind="nuevaCarreraDTO.EstadoCarrera" />
+                                <label class="form-check-label" for="chkEstado">Activo</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(errorGuardar))
+                    {
+                        <div class="alert alert-danger mt-3">
+                            @errorGuardar
+                        </div>
+                    }
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" @onclick="CerrarModalCrear">Cancelar</button>
+                    <button class="btn btn-primary" @onclick="GuardarNuevaCarreraAsync" disabled="@guardando">
+                        @if (guardando)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span class="ms-2">Guardando...</span>
+                        }
+                        else
+                        {
+                            <span>Guardar</span>
+                        }
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}

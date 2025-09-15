@@ -147,6 +147,8 @@ Update-Database -Context D_ContextDB -Project Datos -StartupProject Herramientas
 // Este es otro error que es bastante commun la verdad:
                 Console.WriteLine(string.Join(" | ", res?.Mensajes ?? Array.Empty<string>()));
 // tengo que sabes por que...
+solucion:
+                    errorGuardar = string.Join(" | ", (res?.Mensajes != null && res.Mensajes.Count > 0) ? res.Mensajes : new List<string> { "No fue posible guardar la carrera." });
 
 
 Task<ResultadoAcciones>
@@ -160,3 +162,4 @@ finally
             }
 
             dentro del try catch
+

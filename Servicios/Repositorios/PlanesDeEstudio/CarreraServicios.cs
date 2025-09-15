@@ -14,7 +14,6 @@ namespace Servicios.Repositorios.PlanesDeEstudio
         private readonly CarreraNegocios _carreraNegocios = carreraNegocios;
         private readonly IMapper _mapper = mapper;
 
-        // Fix for CS0106: Remove interface name from method declaration
         public async Task<ResultadoAcciones> InsertarCarrera(CarreraDTO carreraDTO)
         {
             E_Carrera carrera = _mapper.Map<E_Carrera>(carreraDTO);

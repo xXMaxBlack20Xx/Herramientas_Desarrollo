@@ -1,0 +1,113 @@
+﻿@page "/CrearCarrera"
+
+@namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
+@using Entidades.DTO.PlanesDeEstudio.Carreras
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Text.Json
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JS
+
+<h3>Agregar nueva carrera</h3>
+
+<EditForm EditContext="editContext"
+          FormName="crear-carrera"
+          OnValidSubmit="OnValidSubmit"
+          OnInvalidSubmit="OnInvalidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row g-3 mt-2">
+        <div class="col-md-3">
+            <label class="form-label">Clave</label>
+            <InputText class="form-control" @bind-Value="Modelo.ClaveCarrera" />
+            <ValidationMessage For="@(() => Modelo.ClaveCarrera)" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <InputText class="form-control" @bind-Value="Modelo.NombreCarrera" />
+            <ValidationMessage For="@(() => Modelo.NombreCarrera)" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Alias</label>
+            <InputText class="form-control" @bind-Value="Modelo.AliasCarrera" />
+            <ValidationMessage For="@(() => Modelo.AliasCarrera)" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Id Coordinador</label>
+            <!-- Si IdCoordinador es int?, cambia a InputNumber<int?> -->
+            <InputText class="form-control" @bind-Value="Modelo.IdCoordinador" />
+            <ValidationMessage For="@(() => Modelo.IdCoordinador)" />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-center">
+            <div class="form-check mt-4">
+                <InputCheckbox class="form-check-input" @bind-Value="Modelo.EstadoCarrera" />
+                <label class="form-check-label ms-2">Activo</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <!-- type="submit" dispara OnValidSubmit / OnInvalidSubmit -->
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save me-1"></i> Guardar
+        </button>
+
+        <button type="button" class="btn btn-secondary" @onclick="Cancelar">
+            <i class="bi bi-x-circle me-1"></i> Cancelar
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    // Modelo del formulario
+    private CarreraDTO Modelo = new() { EstadoCarrera = true };
+
+    // EditContext para escuchar cambios de campos
+    private EditContext editContext = default!;
+
+    protected override void OnInitialized()
+    {
+        // Vinculamos el EditContext al modelo
+        editContext = new EditContext(Modelo);
+
+        // Hook para depurar cambios de campos (logs al navegador)
+        editContext.OnFieldChanged += async (sender, args) =>
+        {
+            var field = args.FieldIdentifier.FieldName;
+            var json = JsonSerializer.Serialize(Modelo, new JsonSerializerOptions { WriteIndented = true });
+            await JS.InvokeVoidAsync("console.log", $"[FieldChanged] {field}", json);
+        };
+    }
+
+    // Submit válido (pasa validaciones)
+    private async Task OnValidSubmit(EditContext _)
+    {
+        var json = JsonSerializer.Serialize(Modelo, new JsonSerializerOptions { WriteIndented = true });
+        await JS.InvokeVoidAsync("console.log", "[OnValidSubmit] Enviando CarreraDTO:", json);
+
+        // Aquí ya podrías llamar a tu servicio real:
+        // var res = await CarreraServicios.InsertarCarrera(Modelo);
+        // await JS.InvokeVoidAsync("console.log", "[Resultado servicio]", res);
+
+        await JS.InvokeVoidAsync("console.log", "[OnValidSubmit] OK");
+    }
+
+    // Submit inválido (no pasa validaciones)
+    private async Task OnInvalidSubmit(EditContext _)
+    {
+        await JS.InvokeVoidAsync("console.log", "[OnInvalidSubmit] Form inválido", Modelo);
+    }
+
+    private async Task Cancelar()
+    {
+        Modelo = new CarreraDTO { EstadoCarrera = true };
+        editContext = new EditContext(Modelo);
+        await JS.InvokeVoidAsync("console.log", "[Cancelar] Modelo reseteado");
+        StateHasChanged();
+    }
+}

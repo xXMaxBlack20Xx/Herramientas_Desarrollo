@@ -1,8 +1,9 @@
+using AutoMapper;
 using Datos.Contexto;
 using HerramientasDesarrollo.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Negocios.Repositorios.PlanesDeEstudio;
-using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +37,6 @@ builder.Services.AddScoped<
     Servicios.IRepositorios.PlanesDeEstudio.ICarreraServicios,
     Servicios.Repositorios.PlanesDeEstudio.CarreraServicios
 >();
-
 
 builder.Services.AddAutoMapper(cfg => { },
     typeof(Program).Assembly,

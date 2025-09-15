@@ -11,7 +11,7 @@ namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
         [Inject] public ICarreraServicios CarreraServicios { get; set; } = default!;
 
         private string criterioBusqueda = string.Empty;
-        private List<E_Carrera> carrerasTodas = new();
+        private List<E_Carrera> carrerasTodas = [];
 
         // Modal / DTO
         private bool mostrarModalCrear = false;
@@ -51,7 +51,7 @@ namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
         }
 
         // --- Abrir/Cerrar modal ---
-        protected void AbrirCrearCarrera()   // <-- NOMBRE CORREGIDO (antes "AbrirCrearCarreras")
+        protected void AbrirCrearCarrera()
         {
             nuevaCarreraDTO = new CarreraDTO { EstadoCarrera = true };
             errorGuardar = null;
@@ -64,7 +64,7 @@ namespace HerramientasDesarrollo.Areas.PlanesDeEstudio.Carreras
         }
 
         // --- Guardar (INSERT) ---
-        protected async Task GuardarNuevaCarreraAsync()   // <-- Task, no Task<ResultadoAcciones>
+        protected async Task GuardarNuevaCarreraAsync()
         {
             errorGuardar = null;
 
